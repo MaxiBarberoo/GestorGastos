@@ -1,0 +1,10 @@
+.env
+node_modules
+frontend/.next
+frontend/out
+frontend/.turbo
+backend/.tool-versions
+.DS_Store
+*.log
+*.tmp
+*.swp
