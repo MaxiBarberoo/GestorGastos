@@ -50,6 +50,14 @@ interface AuthUser {
 
 type Period = "day" | "week" | "month" | "year" | "custom"
 
+class ApiError extends Error {
+  status: number
+  constructor(message: string, status: number) {
+    super(message)
+    this.status = status
+  }
+}
+
 async function fetchJSON<T>(path: string, options: RequestInit = {}, token?: string): Promise<T> {
   const bodyProvided = options.body !== undefined
   const headers = new Headers(options.headers)
@@ -96,7 +104,7 @@ async function fetchJSON<T>(path: string, options: RequestInit = {}, token?: str
       message = `${message} (${detail})`
     }
 
-    throw new Error(message)
+    throw new ApiError(message, response.status)
   }
 
   if (response.status === 204) {
@@ -171,7 +179,11 @@ export default function ExpenseTracker() {
 
       await fetchAllData(authToken)
     } catch (error) {
-      console.error(error)
+      if (error instanceof ApiError && error.status === 401) {
+        // Session expired or invalid, just clear it without logging error
+      } else {
+        console.error(error)
+      }
       setGlobalError(error instanceof Error ? error.message : "No se pudo iniciar sesión")
       localStorage.removeItem("authToken")
       setToken(null)
