@@ -16,22 +16,3 @@ La carpeta `backend/` sigue una organización MVC clásica: `models/` concentra 
 1. `cd frontend && npm install`.
 2. `npm run dev` y abre `http://localhost:3000`.
 3. Autentícate (registro/login) para sincronizar los datos con el backend.
-
-## Variables de entorno
-
-Toda la configuración se encuentra en `.env` (usada por backend y frontend):
-
-```
-DB_HOST=...
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=...
-DB_NAME=postgres
-DB_SSLMODE=require
-JWT_SECRET=change-me-in-production
-API_PORT=8080
-FRONTEND_ORIGIN=http://localhost:3000
-NEXT_PUBLIC_API_URL=http://localhost:8080/api
-```
-
-Cuando cambies algún valor reinicia backend y frontend para tomar los nuevos parámetros.
