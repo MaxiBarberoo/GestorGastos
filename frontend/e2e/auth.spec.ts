@@ -8,7 +8,7 @@ test('login page loads successfully', async ({ page }) => {
     await page.goto(baseURL);
 
     // Check for the "Inicia Sesión" text which indicates the login page is loaded
-    await expect(page.getByText('Inicia Sesión')).toBeVisible();
+    await expect(page.getByText('Inicia Sesión')).toBeVisible({ timeout: 15000 });
 
     // Check for email and password inputs
     await expect(page.getByPlaceholder('tu@email.com')).toBeVisible();

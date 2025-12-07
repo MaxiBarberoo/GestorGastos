@@ -17,6 +17,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.24.0'
+          cache-dependency-path: backend/go.sum
       
       - name: Backend Unit Tests
         working-directory: ./backend
@@ -53,7 +54,7 @@ jobs:
         run: curl "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND_QA }}"
 
       - name: Wait for QA Deployment
-        run: sleep 60 # Wait for Render to start processing
+        run: sleep 180 # Wait for Render to start processing (3 mins for free tier)
 
   integration-tests:
     needs: deploy-qa
