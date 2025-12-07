@@ -1,0 +1,96 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Backend Setup & Tests
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.0'
+      
+      - name: Backend Unit Tests
+        working-directory: ./backend
+        run: |
+          go mod tidy
+          go test ./...
+
+      # Frontend Setup & Tests
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Frontend Unit Tests
+        working-directory: ./frontend
+        run: npm test
+
+  deploy-qa:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: qa
+    steps:
+      - name: Deploy Backend to QA
+        run: curl "${{ secrets.RENDER_DEPLOY_HOOK_BACKEND_QA }}"
+      
+      - name: Deploy Frontend to QA
+        run: curl "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND_QA }}"
+
+      - name: Wait for QA Deployment
+        run: sleep 60 # Wait for Render to start processing
+
+  integration-tests:
+    needs: deploy-qa
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        working-directory: ./frontend
+        run: npx playwright install --with-deps
+
+      - name: Run Integration Tests
+        working-directory: ./frontend
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: https://gestor-gastos-frontend-qa.onrender.com
+        run: npm run test:e2e
+
+  deploy-prod:
+    needs: integration-tests
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy Backend to PROD
+        run: curl "${{ secrets.RENDER_DEPLOY_HOOK_BACKEND_PROD }}"
+      
+      - name: Deploy Frontend to PROD
+        run: curl "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND_PROD }}"
