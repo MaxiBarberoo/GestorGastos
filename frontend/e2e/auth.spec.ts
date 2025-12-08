@@ -18,6 +18,6 @@ test('login page loads successfully', async ({ page }) => {
     await expect(page.getByText('Inicia Sesión')).toBeVisible({ timeout: 15000 });
 
     // Check for email and password inputs
-    await expect(page.getByPlaceholder('tu@email.com')).toBeVisible();
-    await expect(page.getByPlaceholder('••••••••')).toBeVisible();
+    await expect(page.getByLabel('Email')).toBeVisible();
+    await expect(page.getByLabel('Contraseña')).toBeVisible();
 });
