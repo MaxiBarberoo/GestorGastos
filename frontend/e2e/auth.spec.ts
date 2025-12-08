@@ -17,7 +17,8 @@ test('complete user journey: register, login, add expenses, verify total', async
 
     // 2. Register new user
     await page.getByRole('button', { name: 'Regístrate' }).click();
-    await expect(page.getByRole('heading', { name: 'Crea tu cuenta' })).toBeVisible();
+    // Wait for the state to change
+    await expect(page.getByText('Crea tu cuenta', { exact: true })).toBeVisible();
 
     await page.getByLabel('Nombre').fill(userName);
     await page.getByLabel('Email').fill(userEmail);
