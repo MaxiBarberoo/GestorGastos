@@ -41,7 +41,7 @@ test('complete user journey: register, login, add expenses, verify total', async
 
     // Verify expense appears in list
     await expect(page.getByText('Pizza')).toBeVisible();
-    await expect(page.getByText('$1000.00')).toBeVisible();
+    await expect(page.getByText('$1000.00').first()).toBeVisible();
 
     // 5. Add a recurring expense
     // Name: Internet, Tag: Servicios, Amount: 5000
