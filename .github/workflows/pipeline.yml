@@ -81,7 +81,7 @@ jobs:
       - name: Run Integration Tests
         working-directory: ./frontend
         env:
-          PLAYWRIGHT_TEST_BASE_URL: https://gestor-gastos-frontend-qa.onrender.com
+          PLAYWRIGHT_TEST_BASE_URL: https://gestorgastos-front-qa.onrender.com/
         run: npm run test:e2e
 
   deploy-prod:
