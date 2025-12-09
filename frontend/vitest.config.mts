@@ -9,6 +9,8 @@ export default defineConfig({
         alias: {
             '@': path.resolve(__dirname, './'),
         },
+        reporters: ['default', 'junit'],
+        outputFile: 'junit.xml',
         exclude: ['e2e/**', 'node_modules/**'],
     },
 })
