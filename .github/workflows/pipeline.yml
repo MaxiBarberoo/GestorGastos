@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones disabled for better SonarCloud analysis
 
       # Backend Setup & Tests
       - name: Set up Go
@@ -24,7 +26,7 @@ jobs:
         run: |
           go install gotest.tools/gotestsum@latest
           go mod tidy
-          gotestsum --junitfile unit-tests.xml ./...
+          gotestsum --junitfile unit-tests.xml -- -coverprofile=coverage.out ./...
 
       # Frontend Setup & Tests
       - name: Set up Node.js
@@ -40,7 +42,13 @@ jobs:
 
       - name: Frontend Unit Tests
         working-directory: ./frontend
-        run: npm test
+        run: npm run test -- --coverage
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Upload Test Reports
         if: always() # Run even if tests fail
@@ -49,7 +57,9 @@ jobs:
           name: test-reports
           path: |
             backend/unit-tests.xml
+            backend/coverage.out
             frontend/junit.xml
+            frontend/coverage/
 
   deploy-qa:
     needs: build-and-test
