@@ -51,14 +51,21 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
 
-      - name: Upload Test Reports
-        if: always() # Run even if tests fail
+      - name: Upload Backend Test Reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports
+          name: backend-test-reports-${{ github.sha }}
           path: |
             backend/unit-tests.xml
             backend/coverage.out
+
+      - name: Upload Frontend Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-reports-${{ github.sha }}
+          path: |
             frontend/junit.xml
             frontend/coverage/
 

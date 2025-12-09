@@ -8,3 +8,9 @@ backend/.tool-versions
 *.log
 *.tmp
 *.swp
+
+# Test coverage & reports
+backend/coverage.out
+backend/unit-tests.xml
+frontend/coverage/
+frontend/junit.xml
